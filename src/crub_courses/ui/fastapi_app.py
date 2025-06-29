@@ -101,8 +101,19 @@ def get_service() -> CourseTeamService:
 def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
     """Verify user credentials (basic auth for now)"""
     # Get credentials from environment variables
-    admin_username = os.getenv("ADMIN_USERNAME", "admin")
-    admin_password = os.getenv("ADMIN_PASSWORD", "crub2025")
+    admin_username = os.getenv("ADMIN_USERNAME")
+    admin_password = os.getenv("ADMIN_PASSWORD")
+    
+    if not admin_username:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="ADMIN_USERNAME environment variable is not configured"
+        )
+    if not admin_password:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="ADMIN_PASSWORD environment variable is not configured"
+        )
     
     correct_username = secrets.compare_digest(credentials.username, admin_username)
     correct_password = secrets.compare_digest(credentials.password, admin_password)

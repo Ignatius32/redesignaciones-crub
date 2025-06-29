@@ -18,7 +18,7 @@ if __name__ == "__main__":
     print("Starting CRUB Course Team Management FastAPI Server...")
     print("Dashboard: http://localhost:8000")
     print("API Documentation: http://localhost:8000/api/docs")
-    print("Admin Panel: http://localhost:8000/admin (user: admin, password: crub2025)")
+    print("Admin Panel: http://localhost:8000/admin (credentials from .env file)")
     print("\nPress Ctrl+C to stop the server\n")
     
     # Use the app import string for proper reload functionality

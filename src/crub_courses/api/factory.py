@@ -27,11 +27,13 @@ _load_env_file()
 
 def create_google_sheets_client() -> GoogleSheetsClient:
     """Create a configured Google Sheets client"""
-    base_url = os.getenv(
-        "GOOGLE_SHEETS_BASE_URL",
-        "https://script.google.com/macros/s/AKfycbzkSk45NEiZW2VUSs3ZMbDrJ4PjZzti-5pyM6IjS75BkFAdJVYiqOyuqPL8HKfltfU-/exec"
-    )
-    secret = os.getenv("GOOGLE_SHEETS_SECRET", "1250")
+    base_url = os.getenv("GOOGLE_SHEETS_BASE_URL")
+    secret = os.getenv("GOOGLE_SHEETS_SECRET")
+    
+    if not base_url:
+        raise ValueError("GOOGLE_SHEETS_BASE_URL environment variable is required")
+    if not secret:
+        raise ValueError("GOOGLE_SHEETS_SECRET environment variable is required")
     
     return GoogleSheetsClient(
         base_url=base_url,
@@ -41,12 +43,16 @@ def create_google_sheets_client() -> GoogleSheetsClient:
 
 def create_huayca_client() -> HuaycaClient:
     """Create a configured Huayca client"""
-    base_url = os.getenv(
-        "HUAYCA_BASE_URL",
-        "https://huayca.crub.uncoma.edu.ar/catedras/1.0/rest/materias"
-    )
-    username = os.getenv("HUAYCA_USERNAME", "usuario1")
-    password = os.getenv("HUAYCA_PASSWORD", "pdf")
+    base_url = os.getenv("HUAYCA_BASE_URL")
+    username = os.getenv("HUAYCA_USERNAME")
+    password = os.getenv("HUAYCA_PASSWORD")
+    
+    if not base_url:
+        raise ValueError("HUAYCA_BASE_URL environment variable is required")
+    if not username:
+        raise ValueError("HUAYCA_USERNAME environment variable is required")
+    if not password:
+        raise ValueError("HUAYCA_PASSWORD environment variable is required")
     
     return HuaycaClient(
         base_url=base_url,

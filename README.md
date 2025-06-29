@@ -33,7 +33,7 @@ uvicorn src.crub_courses.ui.fastapi_app:app --host 0.0.0.0 --port 8000 --reload
 3. **Access the application:**
 - **Dashboard**: http://localhost:8000
 - **API Documentation**: http://localhost:8000/api/docs
-- **Admin Panel**: http://localhost:8000/admin (user: `admin`, password: `crub2025`)
+- **Admin Panel**: http://localhost:8000/admin (credentials configured in .env file)
 
 ### Alternative Interfaces
 
