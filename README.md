@@ -98,30 +98,44 @@ redesignaciones-crub/
 
 ## Installation
 
-### Option 1: Direct Installation
+### Prerequisites
+- Python 3.11 or higher
+- Git (for version control)
 
-1. Clone the repository:
+### Setup
+
+1. **Clone the repository:**
 ```bash
-git clone https://github.com/crub/redesignaciones-crub.git
+git clone <repository-url>
 cd redesignaciones-crub
 ```
 
-2. Create a virtual environment:
+2. **Create and activate virtual environment:**
 ```bash
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 ```
 
-3. Install dependencies:
+3. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
-### Option 2: Development Installation
-
+4. **Configure environment variables:**
 ```bash
-pip install -e .
+cp .env.example .env
+# Edit .env file with your actual credentials
 ```
+
+**Required environment variables:**
+- `GOOGLE_SHEETS_BASE_URL`: Your Google Sheets API endpoint
+- `GOOGLE_SHEETS_SECRET`: Secret for Google Sheets access
+- `HUAYCA_USERNAME`: Username for Huayca API
+- `HUAYCA_PASSWORD`: Password for Huayca API
+- `ADMIN_USERNAME`: Admin username for FastAPI (default: admin)
+- `ADMIN_PASSWORD`: Admin password for FastAPI
+
+5. **Start the application:**
 
 ## REST API Endpoints
 
@@ -318,10 +332,27 @@ COPY . .
 CMD ["uvicorn", "src.crub_courses.ui.fastapi_app:app", "--host", "0.0.0.0", "--port", "8000"]
 ```
 
-**Production Server:**
+### Environment Variables
+
+The system uses environment variables for secure configuration. Copy `.env.example` to `.env` and update with your credentials:
+
 ```bash
-uvicorn src.crub_courses.ui.fastapi_app:app --host 0.0.0.0 --port 8000 --workers 4
+cp .env.example .env
 ```
+
+**Required variables:**
+- `GOOGLE_SHEETS_BASE_URL`: Google Apps Script deployment URL
+- `GOOGLE_SHEETS_SECRET`: Authentication secret for Google Sheets
+- `HUAYCA_BASE_URL`: Huayca API endpoint (usually default is fine)
+- `HUAYCA_USERNAME`: Your Huayca API username
+- `HUAYCA_PASSWORD`: Your Huayca API password
+- `ADMIN_USERNAME`: FastAPI admin username (default: admin)
+- `ADMIN_PASSWORD`: FastAPI admin password (change in production!)
+
+**Optional variables:**
+- `FASTAPI_SECRET_KEY`: Secret key for FastAPI sessions
+- `DEBUG`: Enable debug mode (true/false)
+- `LOG_LEVEL`: Logging level (INFO, DEBUG, WARNING, ERROR)
 
 ## Performance
 
