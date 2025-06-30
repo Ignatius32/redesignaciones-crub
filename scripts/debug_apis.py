@@ -9,133 +9,85 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 import requests
-from crub_courses.api.factory import GOOGLE_SHEETS_CONFIG, HUAYCA_CONFIG
+from crub_courses.api.factory import create_google_sheets_client, create_huayca_client
 from requests.auth import HTTPDigestAuth
 
 def debug_google_sheets():
     """Debug Google Sheets API response"""
     print("Debugging Google Sheets API...")
     
-    url = GOOGLE_SHEETS_CONFIG["base_url"]
-    
-    # First try: getSheets action
-    print("\n1. Testing getSheets action...")
-    params = {
-        "secret": GOOGLE_SHEETS_CONFIG["secret"],
-        "action": "getSheets"
-    }
-    
-    print(f"URL: {url}")
-    print(f"Params: {params}")
-    
     try:
-        response = requests.get(url, params=params, timeout=15)
-        print(f"Status Code: {response.status_code}")
-        print(f"Headers: {dict(response.headers)}")
-        print(f"Response Text (first 500 chars): {response.text[:500]}")
+        # Create client using factory
+        client = create_google_sheets_client()
+        print(f"✓ Google Sheets client created successfully")
         
-        if response.headers.get('content-type', '').startswith('application/json'):
-            try:
-                json_data = response.json()
-                print(f"JSON Response: {json_data}")
-            except Exception as e:
-                print(f"JSON Parse Error: {e}")
-        else:
-            print("Response is not JSON")
-            
-    except Exception as e:
-        print(f"Request Error: {e}")
-    
-    # Second try: materias_equipo sheet
-    print("\n2. Testing materias_equipo sheet...")
-    params = {
-        "secret": GOOGLE_SHEETS_CONFIG["secret"],
-        "sheet": "materias_equipo"
-    }
-    
-    print(f"URL: {url}")
-    print(f"Params: {params}")
-    
-    try:
-        response = requests.get(url, params=params, timeout=15)
-        print(f"Status Code: {response.status_code}")
-        print(f"Headers: {dict(response.headers)}")
-        print(f"Response Text (first 500 chars): {response.text[:500]}")
+        # First try: getSheets action
+        print("\n1. Testing getSheets action...")
+        try:
+            sheets = client.get_available_sheets()
+            print(f"   ✓ Available sheets: {sheets}")
+        except Exception as e:
+            print(f"   ✗ getSheets failed: {e}")
         
-        if response.headers.get('content-type', '').startswith('application/json'):
-            try:
-                json_data = response.json()
-                print(f"JSON Response Type: {type(json_data)}")
-                if isinstance(json_data, list):
-                    print(f"JSON List Length: {len(json_data)}")
-                elif isinstance(json_data, dict):
-                    print(f"JSON Dict Keys: {list(json_data.keys())}")
-            except Exception as e:
-                print(f"JSON Parse Error: {e}")
-        else:
-            print("Response is not JSON")
+        # Second try: materias_equipo sheet
+        print("\n2. Testing materias_equipo sheet...")
+        try:
+            materias = client.get_materias_equipo()
+            print(f"   ✓ Retrieved {len(materias)} materias_equipo records")
+            if materias:
+                print(f"   ✓ Sample record keys: {list(materias[0].keys())}")
+        except Exception as e:
+            print(f"   ✗ materias_equipo failed: {e}")
+        
+        # Third try: designaciones_docentes sheet
+        print("\n3. Testing designaciones_docentes sheet...")
+        try:
+            designaciones = client.get_designaciones_docentes()
+            print(f"   ✓ Retrieved {len(designaciones)} designaciones records")
+            if designaciones:
+                print(f"   ✓ Sample record keys: {list(designaciones[0].keys())}")
+        except Exception as e:
+            print(f"   ✗ designaciones_docentes failed: {e}")
             
     except Exception as e:
-        print(f"Request Error: {e}")
-    
-    # Third try: basic auth test (no sheet specified)
-    print("\n3. Testing basic auth (no sheet)...")
-    params = {
-        "secret": GOOGLE_SHEETS_CONFIG["secret"]
-    }
-    
-    print(f"URL: {url}")
-    print(f"Params: {params}")
-    
-    try:
-        response = requests.get(url, params=params, timeout=15)
-        print(f"Status Code: {response.status_code}")
-        print(f"Content-Type: {response.headers.get('content-type')}")
-        print(f"Response Text (first 200 chars): {response.text[:200]}")
-            
-    except Exception as e:
-        print(f"Request Error: {e}")
+        print(f"✗ Failed to create Google Sheets client: {e}")
+
 
 def debug_huayca():
     """Debug Huayca API response"""
     print("\nDebugging Huayca API...")
     
-    url = HUAYCA_CONFIG["base_url"]
-    auth = HTTPDigestAuth(HUAYCA_CONFIG["username"], HUAYCA_CONFIG["password"])
-    
-    print(f"URL: {url}")
-    print(f"Auth: {HUAYCA_CONFIG['username']}:***")
-    
     try:
-        response = requests.get(
-            url, 
-            auth=auth, 
-            timeout=10,
-            verify=False,
-            headers={"Accept": "application/json"}
-        )
-        print(f"Status Code: {response.status_code}")
-        print(f"Headers: {dict(response.headers)}")
-        print(f"Response Text (first 500 chars): {response.text[:500]}")
+        # Create client using factory
+        client = create_huayca_client()
+        print(f"✓ Huayca client created successfully")
         
-        if response.headers.get('content-type', '').startswith('application/json'):
-            try:
-                json_data = response.json()
-                print(f"JSON Response Type: {type(json_data)}")
-                if isinstance(json_data, list):
-                    print(f"JSON List Length: {len(json_data)}")
-                    if json_data:
-                        print(f"First Item Keys: {list(json_data[0].keys())}")
-                elif isinstance(json_data, dict):
-                    print(f"JSON Dict Keys: {list(json_data.keys())}")
-            except Exception as e:
-                print(f"JSON Parse Error: {e}")
-        else:
-            print("Response is not JSON")
+        # Test getting all materias
+        print("\n1. Testing get_all_materias...")
+        try:
+            materias = client.get_all_materias()
+            print(f"   ✓ Retrieved {len(materias)} Huayca materias")
+            if materias:
+                print(f"   ✓ Sample record keys: {list(materias[0].keys())}")
+        except Exception as e:
+            print(f"   ✗ get_all_materias failed: {e}")
+        
+        # Test search with filters
+        print("\n2. Testing search with filters...")
+        try:
+            biology_materias = client.search_materias(depto="BIOLOGÍA")
+            print(f"   ✓ Found {len(biology_materias)} biology materias")
+        except Exception as e:
+            print(f"   ✗ search_materias failed: {e}")
             
     except Exception as e:
-        print(f"Request Error: {e}")
+        print(f"✗ Failed to create Huayca client: {e}")
+
 
 if __name__ == "__main__":
+    print("CRUB APIs Debug Script")
+    print("=" * 50)
     debug_google_sheets()
     debug_huayca()
+    print("=" * 50)
+    print("Debug complete")

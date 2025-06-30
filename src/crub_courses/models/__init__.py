@@ -1,23 +1,38 @@
-"""Data models for the CRUB system"""
+"""
+Data models and type definitions for CRUB Course Management.
 
-from .core import (
-    AcademicPeriod, FacultyRole, OptativeStatus,
-    FacultyDetails, TeamMember, HuaycaCourseDetails, Course
+This module contains TypedDict definitions for raw API responses 
+and processed data models used throughout the application.
+"""
+
+from .types import (
+    # Raw API types
+    MateriasEquipoRaw,
+    DesignacionesDocentesRaw, 
+    HuaycaMateriasRaw,
+    MateriasEquipoRawRecord,
+    DesignacionesDocentesRawRecord,
+    HuaycaMateriasRawRecord,
+    
+    # Processed data models
+    DocenteDesignacion,
+    MateriaAsignada,
+    HuaycaMateriaDetalle,
+    DesignacionesSummary
 )
-from .summary import CourseTeamSummary, DataSourceStatus
-from .types import MateriasEquipoRaw, DesignacionesDocentesRaw, HuaycaMateriasRaw
 
 __all__ = [
-    "AcademicPeriod",
-    "FacultyRole", 
-    "OptativeStatus",
-    "FacultyDetails",
-    "TeamMember",
-    "HuaycaCourseDetails", 
-    "Course",
-    "CourseTeamSummary",
-    "DataSourceStatus",
+    # Raw API types
     "MateriasEquipoRaw",
     "DesignacionesDocentesRaw", 
-    "HuaycaMateriasRaw"
+    "HuaycaMateriasRaw",
+    "MateriasEquipoRawRecord",
+    "DesignacionesDocentesRawRecord",
+    "HuaycaMateriasRawRecord",
+    
+    # Processed data models
+    "DocenteDesignacion",
+    "MateriaAsignada", 
+    "HuaycaMateriaDetalle",
+    "DesignacionesSummary"
 ]

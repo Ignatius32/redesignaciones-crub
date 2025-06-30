@@ -61,6 +61,39 @@ class GoogleSheetsClient:
         except ValueError as e:
             raise GoogleSheetsAPIError(f"Invalid JSON response: {str(e)}")
     
+    def _make_post_request(self, params: Dict[str, Any], json_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Make a POST request to the Google Sheets API"""
+        # Add secret to parameters
+        params["secret"] = self.secret
+        
+        try:
+            logger.info(f"Making Google Sheets API POST request with params: {params} and data: {json_data}")
+            response = self.session.post(
+                self.base_url,
+                params=params,
+                json=json_data,
+                headers={'Content-Type': 'application/json'}
+            )
+            response.raise_for_status()
+            
+            # Check if response is JSON
+            content_type = response.headers.get('content-type', '')
+            if 'application/json' not in content_type:
+                raise GoogleSheetsAPIError(f"Expected JSON response, got {content_type}")
+            
+            data = response.json()
+            
+            # Handle API error responses
+            if isinstance(data, dict) and data.get("status") == "error":
+                raise GoogleSheetsAPIError(f"API Error: {data.get('message', 'Unknown error')}")
+            
+            return data
+            
+        except requests.RequestException as e:
+            raise GoogleSheetsAPIError(f"POST request failed: {str(e)}")
+        except ValueError as e:
+            raise GoogleSheetsAPIError(f"Invalid JSON response: {str(e)}")
+    
     def get_available_sheets(self) -> List[str]:
         """Get list of available sheets"""
         params = {"action": "getSheets"}
@@ -96,6 +129,34 @@ class GoogleSheetsClient:
         
         logger.info(f"Retrieved {len(data)} designaciones_docentes records")
         return data
+    
+    def update_record(self, sheet_name: str, id_redesignacion: int, update_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Update a specific record in a sheet by its id_redesignacion"""
+        logger.info(f"Updating record {id_redesignacion} in sheet '{sheet_name}' with data: {update_data}")
+        
+        # Prepare the update payload according to API documentation
+        json_data = {
+            "_action": "update",
+            "id_redesignacion": id_redesignacion,
+            **update_data
+        }
+        
+        params = {"sheet": sheet_name}
+        response = self._make_post_request(params, json_data)
+        
+        if isinstance(response, dict) and response.get("status") == "success":
+            logger.info(f"Successfully updated record {id_redesignacion} in '{sheet_name}'")
+            return response
+        else:
+            raise GoogleSheetsAPIError(f"Update failed: {response}")
+    
+    def update_materias_equipo_status(self, id_redesignacion: int, estado: str) -> Dict[str, Any]:
+        """Update the Estado field of a materias_equipo record"""
+        return self.update_record("materias_equipo", id_redesignacion, {"Estado": estado})
+    
+    def update_designaciones_docentes_status(self, id_redesignacion: int, estado: str) -> Dict[str, Any]:
+        """Update the Estado field of a designaciones_docentes record"""
+        return self.update_record("designaciones_docentes", id_redesignacion, {"Estado": estado})
 
 
 class HuaycaClient:

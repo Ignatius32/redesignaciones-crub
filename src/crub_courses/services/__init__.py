@@ -1,5 +1,12 @@
-"""Business logic services"""
+"""
+Service layer for business logic and data processing.
 
-from .course_team_service import CourseTeamService
+This module contains services that combine data from multiple APIs
+and provide high-level business operations.
+"""
 
-__all__ = ["CourseTeamService"]
+from .designaciones import DesignacionesService
+
+__all__ = [
+    "DesignacionesService"
+]
