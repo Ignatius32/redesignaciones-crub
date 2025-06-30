@@ -12,7 +12,8 @@ from collections import defaultdict
 from ..api.clients import GoogleSheetsClient, HuaycaClient
 from ..models.types import (
     DocenteDesignacion, MateriaAsignada, HuaycaMateriaDetalle,
-    DesignacionesSummary, MateriasEquipoRawRecord, DesignacionesDocentesRawRecord,
+    DesignacionesSummary, DocenteProfile, DocentesSummary, 
+    MateriasEquipoRawRecord, DesignacionesDocentesRawRecord,
     HuaycaMateriasRawRecord
 )
 
@@ -138,6 +139,95 @@ class DesignacionesService:
             materia_detalle=huayca_detail
         )
     
+    def get_docentes_with_designaciones(self) -> DocentesSummary:
+        """
+        Get all docentes with their designations and materias.
+        
+        This method properly handles the hierarchy:
+        Docente -> Multiple Designaciones -> Multiple Materias per Designación
+        
+        Returns a docente-centric view where each faculty member has
+        all their designations grouped together.
+        """
+        logger.info("Starting to fetch and process all docentes with designaciones")
+        
+        # Get all designaciones first
+        all_designaciones = self.get_designaciones_with_materias()
+        
+        # Group designaciones by docente (apellido_y_nombre)
+        docentes_map = defaultdict(list)
+        for designacion in all_designaciones['designaciones']:
+            docente_name = designacion['apellido_y_nombre'].strip()
+            if docente_name:
+                docentes_map[docente_name].append(designacion)
+        
+        # Create docente profiles
+        docentes = []
+        total_materias = 0
+        
+        for docente_name, designaciones_list in docentes_map.items():
+            # Use the most complete/recent designation for basic info
+            primary_designation = max(designaciones_list, key=lambda d: len(d.get('correos', '')))
+            
+            # Count total materias for this docente
+            docente_materias = sum(len(d['materias']) for d in designaciones_list)
+            total_materias += docente_materias
+            
+            docente_profile = DocenteProfile(
+                apellido_y_nombre=primary_designation['apellido_y_nombre'],
+                legajo=primary_designation['legajo'],
+                documento=primary_designation['documento'],
+                cuil=primary_designation['cuil'],
+                sexo=primary_designation['sexo'],
+                fecha_nacim=primary_designation['fecha_nacim'],
+                correos=primary_designation['correos'],
+                total_designaciones=len(designaciones_list),
+                total_materias=docente_materias,
+                designaciones=designaciones_list
+            )
+            
+            docentes.append(docente_profile)
+        
+        # Sort docentes by name
+        docentes.sort(key=lambda d: d['apellido_y_nombre'])
+        
+        logger.info(f"Processed {len(docentes)} docentes with {all_designaciones['total_designaciones']} designaciones and {total_materias} materias")
+        
+        return DocentesSummary(
+            total_docentes=len(docentes),
+            total_designaciones=all_designaciones['total_designaciones'],
+            total_materias_asignadas=total_materias,
+            docentes=docentes
+        )
+    
+    def get_docente_by_name(self, docente_name: str) -> Optional[DocenteProfile]:
+        """Get a specific docente profile with all their designations"""
+        logger.info(f"Fetching docente profile for: {docente_name}")
+        
+        all_docentes = self.get_docentes_with_designaciones()
+        
+        for docente in all_docentes['docentes']:
+            if docente_name.lower() in docente['apellido_y_nombre'].lower():
+                logger.info(f"Found docente {docente['apellido_y_nombre']} with {docente['total_designaciones']} designaciones and {docente['total_materias']} materias")
+                return docente
+        
+        logger.warning(f"Docente {docente_name} not found")
+        return None
+    
+    def get_docentes_by_partial_name(self, partial_name: str) -> List[DocenteProfile]:
+        """Get all docentes matching a partial name"""
+        logger.info(f"Searching docentes with partial name: {partial_name}")
+        
+        all_docentes = self.get_docentes_with_designaciones()
+        result = []
+        
+        for docente in all_docentes['docentes']:
+            if partial_name.lower() in docente['apellido_y_nombre'].lower():
+                result.append(docente)
+        
+        logger.info(f"Found {len(result)} docentes matching '{partial_name}'")
+        return result
+
     def get_designaciones_with_materias(self) -> DesignacionesSummary:
         """
         Get all designaciones with their related materias.

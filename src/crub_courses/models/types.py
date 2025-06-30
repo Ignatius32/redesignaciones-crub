@@ -105,8 +105,27 @@ HuaycaMateriasRaw = List[HuaycaMateriasRawRecord]
 
 
 # Processed data models
+class DocenteProfile(TypedDict):
+    """Complete profile of a faculty member with all their designations"""
+    # Basic docente information (from first designation or most complete)
+    apellido_y_nombre: str
+    legajo: str  # Employee ID
+    documento: str
+    cuil: str
+    sexo: str
+    fecha_nacim: str
+    correos: str
+    
+    # Statistics
+    total_designaciones: int
+    total_materias: int
+    
+    # All designations for this docente
+    designaciones: List['DocenteDesignacion']
+
+
 class DocenteDesignacion(TypedDict):
-    """A faculty member's designation with related course information"""
+    """A specific designation for a faculty member"""
     # Designation data
     id_redesignacion: int
     d_desig: str
@@ -134,7 +153,7 @@ class DocenteDesignacion(TypedDict):
     lsgh: str
     estado: str
     
-    # Related materias (courses) for this designation
+    # Related materias (courses) for this specific designation
     materias: List['MateriaAsignada']
 
 
@@ -188,8 +207,16 @@ class HuaycaMateriaDetalle(TypedDict):
     observaciones: str
 
 
+class DocentesSummary(TypedDict):
+    """Summary of all docentes with their designations"""
+    total_docentes: int
+    total_designaciones: int
+    total_materias_asignadas: int
+    docentes: List[DocenteProfile]
+
+
 class DesignacionesSummary(TypedDict):
-    """Summary of designaciones with statistics"""
+    """Summary of designaciones with statistics (legacy - use DocentesSummary for new code)"""
     total_designaciones: int
     total_docentes: int
     total_materias_asignadas: int

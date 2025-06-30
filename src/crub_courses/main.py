@@ -1,7 +1,10 @@
 """
 FastAPI web application for CRUB Course Team Management System.
 
-This application provides REST API endpoints to access and manage faculty designations
+This application provides REST API endpoints to         <div class="endpoint">
+            <span class="method">GET</span> /designaciones/by-desig/{d_desig}
+            <br>Get specific designation by D_Desig number
+        </div>d manage faculty designations
 and course assignments, combining data from Google Sheets and Huayca APIs.
 """
 
@@ -16,7 +19,7 @@ import secrets
 
 from .api.factory import create_google_sheets_client, create_huayca_client
 from .services.designaciones import DesignacionesService
-from .models.types import DocenteDesignacion, DesignacionesSummary
+from .models.types import DocenteDesignacion, DesignacionesSummary, DocenteProfile, DocentesSummary
 
 # Configure logging
 logging.basicConfig(
@@ -105,7 +108,17 @@ async def root():
         
         <div class="endpoint">
             <span class="method">GET</span> <a href="/designaciones">/designaciones</a>
-            <br>Get all faculty designations with related course assignments
+            <br>Get all faculty members with their designations and course assignments
+        </div>
+        
+        <div class="endpoint">
+            <span class="method">GET</span> /designaciones/{docente_name}
+            <br>Get specific faculty member profile with all designations
+        </div>
+        
+        <div class="endpoint">
+            <span class="method">GET</span> <a href="/designaciones/flat">/designaciones/flat</a>
+            <br>Get all designations as flat list (legacy view)
         </div>
         
         <div class="endpoint">
@@ -115,7 +128,7 @@ async def root():
         
         <div class="endpoint">
             <span class="method">GET</span> /designaciones/docente/{docente_name}
-            <br>Get all designations for a specific faculty member
+            <br>Get all designations for a specific faculty member (legacy - use /docentes/{name} instead)
         </div>
         
         <div class="endpoint">
@@ -163,24 +176,27 @@ async def health_check():
             detail=f"Service unavailable: {str(e)}"
         )
 
-@app.get("/designaciones", response_model=DesignacionesSummary)
+@app.get("/designaciones", response_model=DocentesSummary)
 async def get_all_designaciones():
     """
-    Get all faculty designations with their related course assignments.
+    Get all faculty members with their designations and course assignments.
     
-    This endpoint combines:
-    - Faculty designation data from Google Sheets
-    - Course assignment data from Google Sheets  
-    - Detailed course information from Huayca API
+    This endpoint provides a docente-centric view where each faculty member
+    is shown with all their designations grouped together. This properly
+    reflects the real data structure where faculty can have multiple appointments.
     
-    Returns a comprehensive list linking each designation (D_Desig) with:
-    - All related course assignments (matching Desig)
-    - Detailed course information from academic system (matching Cod_SIU to cod_guarani)
+    Key features:
+    - Groups multiple designations per faculty member
+    - Shows statistics (total designaciones and materias per docente)
+    - Includes complete designation and course information
+    - Sorted alphabetically by faculty name
+    
+    Hierarchy: Docente -> Designaciones -> Materias
     """
     try:
-        logger.info("API request: get_all_designaciones")
-        result = designaciones_service.get_designaciones_with_materias()
-        logger.info(f"Returning {result['total_designaciones']} designaciones with {result['total_materias_asignadas']} materias")
+        logger.info("API request: get_all_designaciones (docente-centric view)")
+        result = designaciones_service.get_docentes_with_designaciones()
+        logger.info(f"Returning {result['total_docentes']} docentes with {result['total_designaciones']} designaciones and {result['total_materias_asignadas']} materias")
         return result
     except Exception as e:
         logger.error(f"Error in get_all_designaciones: {e}")
@@ -189,7 +205,69 @@ async def get_all_designaciones():
             detail=f"Failed to fetch designaciones: {str(e)}"
         )
 
-@app.get("/designaciones/{d_desig}", response_model=Optional[DocenteDesignacion])
+@app.get("/designaciones/{docente_name}", response_model=Optional[DocenteProfile])
+async def get_designacion_by_docente(docente_name: str):
+    """
+    Get a specific faculty member profile with all their designations.
+    
+    Args:
+        docente_name: Part of the faculty member's name (case-insensitive search)
+    
+    Returns:
+        Complete faculty profile including:
+        - Basic information (name, legajo, contact info)
+        - Statistics (total designations and courses)
+        - All designations with their associated courses
+        - Detailed course information from academic system
+    
+    Example: /designaciones/ANDRADE will find "ANDRADE GAMBOA, JULIO JOSE"
+    """
+    try:
+        logger.info(f"API request: get_designacion_by_docente for {docente_name}")
+        result = designaciones_service.get_docente_by_name(docente_name)
+        
+        if result is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Docente with name containing '{docente_name}' not found"
+            )
+        
+        logger.info(f"Returning docente {result['apellido_y_nombre']} with {result['total_designaciones']} designaciones and {result['total_materias']} materias")
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in get_designacion_by_docente: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch docente {docente_name}: {str(e)}"
+        )
+
+@app.get("/designaciones/flat", response_model=DesignacionesSummary)
+async def get_all_designaciones_flat():
+    """
+    Get all faculty designations as a flat list.
+    
+    **Note: This is a legacy view. The main /designaciones endpoint provides a better docente-centric view.**
+    
+    This endpoint returns a flat list of all designations. Since faculty members
+    can have multiple designations, the same person may appear multiple times.
+    
+    For the recommended organized view grouped by faculty member, use GET /designaciones instead.
+    """
+    try:
+        logger.info("API request: get_all_designaciones_flat (legacy flat view)")
+        result = designaciones_service.get_designaciones_with_materias()
+        logger.info(f"Returning {result['total_designaciones']} designaciones with {result['total_materias_asignadas']} materias (flat view)")
+        return result
+    except Exception as e:
+        logger.error(f"Error in get_all_designaciones_flat: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch designaciones: {str(e)}"
+        )
+
+@app.get("/designaciones/by-desig/{d_desig}", response_model=Optional[DocenteDesignacion])
 async def get_designacion_by_desig(d_desig: str):
     """
     Get a specific faculty designation by D_Desig number.
@@ -222,29 +300,16 @@ async def get_designacion_by_desig(d_desig: str):
             detail=f"Failed to fetch designation {d_desig}: {str(e)}"
         )
 
-@app.get("/designaciones/docente/{docente_name}", response_model=List[DocenteDesignacion])
-async def get_designaciones_by_docente(docente_name: str):
-    """
-    Get all designations for a specific faculty member.
-    
-    Args:
-        docente_name: Part of the faculty member's name (case-insensitive search)
-    
-    Returns:
-        List of all designations for the specified faculty member, each with
-        their related course assignments and detailed course information.
-    """
-    try:
-        logger.info(f"API request: get_designaciones_by_docente for {docente_name}")
-        result = designaciones_service.get_designaciones_by_docente(docente_name)
-        logger.info(f"Returning {len(result)} designaciones for docente {docente_name}")
-        return result
-    except Exception as e:
-        logger.error(f"Error in get_designaciones_by_docente: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to fetch designaciones for {docente_name}: {str(e)}"
-        )
+# Legacy endpoints for backward compatibility
+@app.get("/docentes", response_model=DocentesSummary)
+async def get_all_docentes_legacy():
+    """Legacy endpoint - use /designaciones instead"""
+    return await get_all_designaciones()
+
+@app.get("/docentes/{docente_name}", response_model=Optional[DocenteProfile])
+async def get_docente_by_name_legacy(docente_name: str):
+    """Legacy endpoint - use /designaciones/{name} instead"""
+    return await get_designacion_by_docente(docente_name)
 
 # Admin endpoints
 
