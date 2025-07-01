@@ -315,6 +315,70 @@ class DesignacionesService:
         logger.info(f"Found {len(result)} designations for docente {docente_name}")
         return result
     
+    def get_designaciones_by_departamento(self) -> Dict[str, List[DocenteDesignacion]]:
+        """
+        Get all designaciones grouped by departamento.
+        
+        Returns a dictionary where keys are department names and values are
+        lists of designaciones belonging to that department, ordered by D_Desig.
+        """
+        logger.info("Fetching designaciones grouped by departamento")
+        
+        all_designaciones = self.get_designaciones_with_materias()
+        
+        # Group by departamento
+        by_department = defaultdict(list)
+        for designacion in all_designaciones['designaciones']:
+            dept = designacion.get('departamento', '').strip()
+            if not dept:
+                dept = 'SIN DEPARTAMENTO'
+            by_department[dept].append(designacion)
+        
+        # Sort designaciones within each department by D_Desig
+        for dept in by_department:
+            by_department[dept].sort(key=lambda d: d.get('d_desig', ''))
+        
+        # Convert to regular dict and sort department names
+        result = dict(sorted(by_department.items()))
+        
+        logger.info(f"Grouped designaciones into {len(result)} departments")
+        for dept, designaciones in result.items():
+            logger.info(f"  {dept}: {len(designaciones)} designaciones")
+        
+        return result
+    
+    def get_departamentos_summary(self) -> Dict[str, Dict[str, int]]:
+        """
+        Get summary statistics for each department.
+        
+        Returns a dictionary with department names as keys and statistics as values:
+        - total_designaciones: number of designations
+        - total_docentes: number of unique faculty members
+        - total_materias: number of course assignments
+        """
+        logger.info("Calculating department summary statistics")
+        
+        designaciones_by_dept = self.get_designaciones_by_departamento()
+        summary = {}
+        
+        for dept, designaciones in designaciones_by_dept.items():
+            # Count unique docentes
+            unique_docentes = set()
+            total_materias = 0
+            
+            for designacion in designaciones:
+                unique_docentes.add(designacion['apellido_y_nombre'])
+                total_materias += len(designacion['materias'])
+            
+            summary[dept] = {
+                'total_designaciones': len(designaciones),
+                'total_docentes': len(unique_docentes),
+                'total_materias': total_materias
+            }
+        
+        logger.info(f"Calculated statistics for {len(summary)} departments")
+        return summary
+
     def clear_cache(self):
         """Clear the Huayca data cache"""
         self._huayca_cache = None

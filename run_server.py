@@ -57,7 +57,7 @@ def main():
         print("=" * 60)
         
         uvicorn.run(
-            "crub_courses.main:app",  # Use string import for reload to work
+            "redesignaciones.main:app",  # Use string import for reload to work
             host=host,
             port=port,
             reload=debug,

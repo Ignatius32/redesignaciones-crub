@@ -14,7 +14,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 import os
 import logging
-from typing import List, Optional
+from typing import List, Optional, Dict
 import secrets
 
 from .api.factory import create_google_sheets_client, create_huayca_client
@@ -46,6 +46,16 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+# Mount static files directory for frontend assets
+try:
+    from pathlib import Path
+    static_dir = Path(__file__).parent / "ui" / "static"
+    if static_dir.exists():
+        app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+        logger.info(f"Mounted static files from {static_dir}")
+except Exception as e:
+    logger.warning(f"Could not mount static files: {e}")
 
 # Security setup
 security = HTTPBasic()
@@ -112,6 +122,11 @@ async def root():
         </div>
         
         <div class="endpoint">
+            <span class="method">GET</span> <a href="/departamentos">/departamentos</a>
+            <br>Get designations grouped by department (new frontend view)
+        </div>
+        
+        <div class="endpoint">
             <span class="method">GET</span> /designaciones/{docente_name}
             <br>Get specific faculty member profile with all designations
         </div>
@@ -122,13 +137,18 @@ async def root():
         </div>
         
         <div class="endpoint">
-            <span class="method">GET</span> /designaciones/{d_desig}
+            <span class="method">GET</span> /designaciones/by-desig/{d_desig}
             <br>Get specific designation by D_Desig number
         </div>
         
         <div class="endpoint">
-            <span class="method">GET</span> /designaciones/docente/{docente_name}
-            <br>Get all designations for a specific faculty member (legacy - use /docentes/{name} instead)
+            <span class="method">GET</span> /api/departamentos
+            <br>Get list of all departments with statistics
+        </div>
+        
+        <div class="endpoint">
+            <span class="method">GET</span> /api/departamentos/{departamento}
+            <br>Get all designations for a specific department
         </div>
         
         <div class="endpoint">
@@ -310,6 +330,130 @@ async def get_all_docentes_legacy():
 async def get_docente_by_name_legacy(docente_name: str):
     """Legacy endpoint - use /designaciones/{name} instead"""
     return await get_designacion_by_docente(docente_name)
+
+# New department-based endpoints
+
+@app.get("/api/departamentos")
+async def get_departamentos_list():
+    """
+    Get list of all departments with statistics.
+    
+    Returns a summary of all departments including:
+    - Department names
+    - Number of designations per department
+    - Number of unique faculty members per department
+    - Number of course assignments per department
+    """
+    try:
+        logger.info("API request: get_departamentos_list")
+        summary = designaciones_service.get_departamentos_summary()
+        
+        # Transform into a more frontend-friendly format
+        result = []
+        for dept_name, stats in summary.items():
+            result.append({
+                "nombre": dept_name,
+                "total_designaciones": stats["total_designaciones"],
+                "total_docentes": stats["total_docentes"],
+                "total_materias": stats["total_materias"]
+            })
+        
+        # Sort by department name
+        result.sort(key=lambda d: d["nombre"])
+        
+        logger.info(f"Returning {len(result)} departments")
+        return {
+            "total_departamentos": len(result),
+            "departamentos": result
+        }
+    except Exception as e:
+        logger.error(f"Error in get_departamentos_list: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch departments: {str(e)}"
+        )
+
+@app.get("/api/departamentos/{departamento}")
+async def get_designaciones_by_departamento(departamento: str):
+    """
+    Get all designations for a specific department.
+    
+    Args:
+        departamento: Department name (case-sensitive)
+    
+    Returns:
+        All designations belonging to the specified department,
+        ordered by D_Desig, with their associated course assignments.
+    """
+    try:
+        logger.info(f"API request: get_designaciones_by_departamento for {departamento}")
+        all_by_dept = designaciones_service.get_designaciones_by_departamento()
+        
+        if departamento not in all_by_dept:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Department '{departamento}' not found"
+            )
+        
+        designaciones = all_by_dept[departamento]
+        total_materias = sum(len(d['materias']) for d in designaciones)
+        unique_docentes = set(d['apellido_y_nombre'] for d in designaciones)
+        
+        logger.info(f"Returning {len(designaciones)} designaciones for department {departamento}")
+        return {
+            "departamento": departamento,
+            "total_designaciones": len(designaciones),
+            "total_docentes": len(unique_docentes),
+            "total_materias": total_materias,
+            "designaciones": designaciones
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error in get_designaciones_by_departamento: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch designations for department {departamento}: {str(e)}"
+        )
+
+@app.get("/departamentos", response_class=HTMLResponse)
+async def departamentos_frontend():
+    """
+    Frontend interface for viewing designations by department.
+    
+    This endpoint serves the HTML page for the department-based view
+    of faculty designations with interactive filtering and sorting.
+    """
+    try:
+        # Read the HTML file
+        from pathlib import Path
+        html_file = Path(__file__).parent / "ui" / "designaciones.html"
+        
+        if html_file.exists():
+            with open(html_file, 'r', encoding='utf-8') as f:
+                return f.read()
+        else:
+            # Return a basic HTML page if the file doesn't exist yet
+            return """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Designaciones por Departamento - CRUB</title>
+                <meta charset="utf-8">
+            </head>
+            <body>
+                <h1>Designaciones por Departamento</h1>
+                <p>La interfaz frontend está en desarrollo...</p>
+                <p><a href="/">← Volver al inicio</a></p>
+            </body>
+            </html>
+            """
+    except Exception as e:
+        logger.error(f"Error serving departamentos frontend: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to serve frontend: {str(e)}"
+        )
 
 # Admin endpoints
 

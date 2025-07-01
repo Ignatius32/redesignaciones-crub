@@ -1,0 +1,1064 @@
+/* CRUB Designaciones Frontend Styles */
+
+:root {
+    --primary-color: #2E86AB;
+    --secondary-color: #A23B72;
+    --accent-color: #F18F01;
+    --success-color: #2E8B57;
+    --warning-color: #FF8C00;
+    --danger-color: #DC143C;
+    --light-gray: #f8f9fa;
+    --medium-gray: #e9ecef;
+    --dark-gray: #495057;
+    --text-color: #333;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: #fff;
+}
+
+/* Header */
+.header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 1rem 0;
+    box-shadow: var(--box-shadow);
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.header-nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.header-nav a:hover {
+    background-color: rgba(255,255,255,0.2);
+}
+
+/* Main Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Loading Spinner */
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    font-size: 1.1rem;
+    color: var(--dark-gray);
+}
+
+.spinner {
+    border: 3px solid var(--medium-gray);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin-right: 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error Message */
+.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin: 1rem 0;
+    border: 1px solid #f5c6cb;
+}
+
+/* Controls Section */
+.controls {
+    background-color: var(--light-gray);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+    box-shadow: var(--box-shadow);
+}
+
+.controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+
+.search-group {
+    flex: 1;
+    min-width: 250px;
+}
+
+.search-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--dark-gray);
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(46, 134, 171, 0.1);
+}
+
+.filter-group {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.filter-select {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    background-color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.clear-btn {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--warning-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.clear-btn:hover {
+    background-color: #e07b00;
+    transform: translateY(-1px);
+}
+
+/* Statistics */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    border-left: 4px solid var(--primary-color);
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+    display: block;
+}
+
+.stat-label {
+    color: var(--dark-gray);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+/* Department List */
+.departments-list {
+    background-color: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+}
+
+.department-item {
+    border-bottom: 1px solid var(--medium-gray);
+    transition: var(--transition);
+}
+
+.department-item:last-child {
+    border-bottom: none;
+}
+
+.department-header {
+    background-color: var(--light-gray);
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.department-header:hover {
+    background-color: var(--medium-gray);
+}
+
+.department-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+}
+
+.department-stats {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--dark-gray);
+}
+
+.department-toggle {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: bold;
+    transition: var(--transition);
+}
+
+.department-content {
+    display: none;
+    padding: 0;
+}
+
+.department-content.expanded {
+    display: block;
+}
+
+.department-header.expanded .department-toggle {
+    transform: rotate(180deg);
+}
+
+/* Designaciones Table */
+.designaciones-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+.designaciones-table th,
+.designaciones-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.designaciones-table th {
+    background-color: var(--light-gray);
+    font-weight: 600;
+    color: var(--dark-gray);
+    position: sticky;
+    top: 0;
+}
+
+.designaciones-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Enhanced Designacion Row Styles */
+.designacion-main-row {
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.designacion-main-row:hover {
+    background-color: #f0f8ff;
+}
+
+.designacion-main-row.has-materias:hover {
+    background-color: #e3f2fd;
+}
+
+.designacion-main-row.expanded {
+    background-color: #e3f2fd;
+    border-left: 4px solid var(--primary-color);
+}
+
+.d-desig-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.d-desig {
+    font-weight: 600;
+    color: var(--primary-color);
+    background: #e3f2fd;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.expand-indicator, .no-materias-indicator {
+    font-size: 0.8rem;
+    transition: var(--transition);
+    min-width: 16px;
+    text-align: center;
+}
+
+.expand-indicator {
+    color: var(--primary-color);
+    cursor: pointer;
+}
+
+.no-materias-indicator {
+    color: #ccc;
+    cursor: default;
+}
+
+.docente-name {
+    font-weight: 500;
+}
+
+.materias-count.with-materias {
+    background-color: var(--success-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    display: inline-block;
+    min-width: 20px;
+    text-align: center;
+}
+
+.materias-count.no-materias {
+    background-color: #ddd;
+    color: #666;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    display: inline-block;
+    min-width: 20px;
+    text-align: center;
+    font-style: italic;
+}
+
+/* Expandable Content Styles */
+.materias-row {
+    background-color: #f8f9fa;
+    transition: var(--transition);
+}
+
+.materias-row.hidden {
+    display: none;
+}
+
+.materias-row.expanded {
+    display: table-row;
+}
+
+.designacion-expanded-details {
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    margin: 0.5rem;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid var(--primary-color);
+}
+
+/* Designation Info Section */
+.designacion-info-section {
+    margin-bottom: 2rem;
+}
+
+.designacion-info-section h4 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+    font-size: 1.1rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 3px solid var(--accent-color);
+}
+
+.info-item label {
+    font-weight: 600;
+    color: #555;
+    min-width: 120px;
+    margin-right: 0.5rem;
+}
+
+.info-item span {
+    flex: 1;
+    color: #333;
+}
+
+/* Enhanced Materias Section */
+.materias-section {
+    margin-top: 2rem;
+}
+
+.materias-section h4 {
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+    font-size: 1.1rem;
+}
+
+.no-materias-section h4 {
+    color: #999;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e9ecef;
+    font-size: 1.1rem;
+}
+
+.no-materias-message {
+    color: #666;
+    font-style: italic;
+    text-align: center;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px dashed #ddd;
+}
+
+.materias-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Enhanced Materia Card Styles */
+.materia-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: var(--transition);
+}
+
+.materia-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.materia-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e9ecef;
+}
+
+.materia-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+    flex: 1;
+    line-height: 1.3;
+}
+
+.materia-codigo {
+    background: var(--accent-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-left: 1rem;
+}
+
+.materia-basic-info {
+    margin-bottom: 1rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 500;
+    color: #555;
+    font-size: 0.9rem;
+}
+
+.info-value {
+    color: #333;
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+/* Huayca Details */
+.huayca-details {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 2px solid #e3f2fd;
+    background: #f8faff;
+    border-radius: 6px;
+    padding: 1rem;
+}
+
+.huayca-details h6 {
+    color: var(--secondary-color);
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.huayca-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.huayca-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0.6rem;
+    background: white;
+    border-radius: 4px;
+    border-left: 3px solid var(--secondary-color);
+}
+
+.huayca-label {
+    font-weight: 500;
+    color: #555;
+    font-size: 0.8rem;
+}
+
+.huayca-value {
+    color: #333;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.contenidos-section, .correlativas-section {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #e9ecef;
+}
+
+.contenidos-section h6, .correlativas-section h6 {
+    margin: 0 0 0.75rem 0;
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+.contenidos-text, .correlativas-text {
+    margin: 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #555;
+}
+
+/* Button Styles */
+.btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.btn-sm:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-1px);
+}
+
+.status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.status-activo {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-inactivo {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.status-pendiente {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+/* Materias Details */
+.materias-details {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-top: 2px solid var(--primary-color);
+}
+
+.materias-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.materia-card {
+    background-color: white;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    border-left: 3px solid var(--accent-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.materia-name {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.materia-info {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+}
+
+.materia-label {
+    font-weight: 500;
+    color: var(--dark-gray);
+}
+
+.materia-value {
+    color: var(--text-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .controls-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .stats {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .department-stats {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .designaciones-table {
+        font-size: 0.9rem;
+    }
+
+    .materias-list {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Enhanced responsive for expandable content */
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .materias-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .huayca-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .materia-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .materia-codigo {
+        margin-left: 0;
+    }
+    
+    .designacion-expanded-details {
+        padding: 1rem;
+    }
+    
+    .d-desig-cell {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 1rem 0.5rem;
+    }
+
+    .controls {
+        padding: 1rem;
+    }
+
+    .stat-card {
+        padding: 1rem;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+    }
+
+    .department-header {
+        padding: 0.75rem 1rem;
+    }
+
+    .designaciones-table th,
+    .designaciones-table td {
+        padding: 0.5rem;
+    }
+}
+
+/* Utilities */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+
+.hidden { display: none !important; }
+.visible { display: block !important; }
+
+/* Print Styles */
+@media print {
+    .controls,
+    .header-nav {
+        display: none;
+    }
+    
+    .department-content {
+        display: block !important;
+    }
+    
+    .container {
+        max-width: none;
+        padding: 0;
+    }
+    
+    .department-item {
+        break-inside: avoid;
+    }
+}
+
+/* Additional CSS for Expanded Designaciones */
+
+/* Materias Section Enhancements */
+.materias-section {
+    margin-top: 2rem;
+}
+
+.materias-section h4 {
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--light-gray);
+}
+
+.no-materias-section h4 {
+    color: var(--dark-gray);
+    margin-bottom: 1rem;
+}
+
+.no-materias-message {
+    color: var(--dark-gray);
+    font-style: italic;
+    padding: 1rem;
+    background-color: var(--light-gray);
+    border-radius: var(--border-radius);
+    text-align: center;
+}
+
+.materias-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Enhanced Materia Card */
+.materia-card {
+    background-color: white;
+    border: 1px solid #e0e0e0;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: var(--transition);
+    border-left: 4px solid var(--accent-color);
+}
+
+.materia-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.materia-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #eee;
+}
+
+.materia-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: 0;
+    flex: 1;
+    line-height: 1.3;
+}
+
+.materia-codigo {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    white-space: nowrap;
+    margin-left: 1rem;
+}
+
+.materia-basic-info {
+    margin-bottom: 1rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-weight: 500;
+    color: var(--dark-gray);
+    font-size: 0.9rem;
+}
+
+.info-value {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+/* Huayca Details Enhancements */
+.huayca-details {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius);
+    border: 1px solid #e9ecef;
+}
+
+.huayca-details h6 {
+    color: var(--secondary-color);
+    margin: 0 0 0.75rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.huayca-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.huayca-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.huayca-label {
+    font-weight: 500;
+    color: var(--dark-gray);
+    font-size: 0.8rem;
+}
+
+.huayca-value {
+    color: var(--text-color);
+    font-size: 0.8rem;
+    background-color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+}
+
+.contenidos-section,
+.correlativas-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.contenidos-section h6,
+.correlativas-section h6 {
+    color: var(--secondary-color);
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.contenidos-text,
+.correlativas-text {
+    color: var(--text-color);
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0;
+    background-color: white;
+    padding: 0.75rem;
+    border-radius: 4px;
+    border-left: 3px solid var(--secondary-color);
+}
+
+/* Enhanced Designacion Info Section */
+.designacion-info-section {
+    margin-bottom: 2rem;
+}
+
+.designacion-info-section h4 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--light-gray);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.info-item label {
+    font-weight: 600;
+    color: var(--dark-gray);
+    font-size: 0.9rem;
+}
+
+.info-item span {
+    color: var(--text-color);
+    background-color: var(--light-gray);
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}

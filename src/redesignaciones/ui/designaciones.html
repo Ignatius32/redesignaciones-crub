@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Designaciones por Departamento - CRUB</title>
+    <link rel="stylesheet" href="/static/css/designaciones.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏛️</text></svg>">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>🏛️ CRUB - Designaciones por Departamento</h1>
+            <nav class="header-nav">
+                <a href="/">Inicio</a>
+                <a href="/designaciones">API Docentes</a>
+                <a href="/docs">API Docs</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            Cargando datos de designaciones...
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" style="display: none;">
+            <!-- Controls Section -->
+            <section class="controls">
+                <div class="controls-row">
+                    <div class="search-group">
+                        <label for="searchInput">Buscar Departamento</label>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            class="search-input" 
+                            placeholder="Ej: QUÍMICA, BIOLOGÍA, MATEMÁTICA..."
+                            autocomplete="off"
+                        >
+                    </div>
+                    
+                    <div class="filter-group">
+                        <div>
+                            <label for="filterSelect">Filtrar por tamaño</label>
+                            <select id="filterSelect" class="filter-select">
+                                <option value="all">Todos los departamentos</option>
+                                <option value="large">Grandes (≥20 designaciones)</option>
+                                <option value="medium">Medianos (5-19 designaciones)</option>
+                                <option value="small">Pequeños (< 5 designaciones)</option>
+                                <option value="with-courses">Con materias asignadas</option>
+                            </select>
+                        </div>
+                        
+                        <button id="clearFilters" class="clear-btn">
+                            Limpiar Filtros
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Statistics -->
+            <section class="stats">
+                <div class="stat-card">
+                    <span class="stat-number" id="statDepartments">0</span>
+                    <span class="stat-label">Departamentos</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="statDesignaciones">0</span>
+                    <span class="stat-label">Designaciones</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="statDocentes">0</span>
+                    <span class="stat-label">Docentes</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="statMaterias">0</span>
+                    <span class="stat-label">Materias Asignadas</span>
+                </div>
+            </section>
+
+            <!-- Instructions -->
+            <section class="mb-3">
+                <div style="background-color: #e3f2fd; padding: 1rem; border-radius: 8px; border-left: 4px solid #2196f3;">
+                    <h3 style="margin: 0 0 0.5rem 0; color: #1976d2;">📋 Instrucciones de Uso</h3>
+                    <ul style="margin: 0; padding-left: 1.5rem;">
+                        <li><strong>Explorar departamentos:</strong> Haga clic en el nombre de cualquier departamento para ver sus designaciones</li>
+                        <li><strong>Ver materias:</strong> Haga clic en una fila de designación para ver las materias asignadas</li>
+                        <li><strong>Buscar:</strong> Use la barra de búsqueda para encontrar departamentos específicos</li>
+                        <li><strong>Filtrar:</strong> Use los filtros para ver departamentos por tamaño o características</li>
+                        <li><strong>Ver detalles:</strong> Haga clic en "Ver detalles" para abrir información completa en una nueva pestaña</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Departments List -->
+            <section class="departments-list">
+                <div id="departmentsList">
+                    <!-- Departments will be populated by JavaScript -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="margin-top: 3rem; padding: 2rem 0; background-color: #f8f9fa; text-align: center; color: #666;">
+        <div class="container">
+            <p>
+                <strong>CRUB - Centro Regional Universitario Bariloche</strong><br>
+                Sistema de Gestión de Designaciones Docentes
+            </p>
+            <p style="font-size: 0.9rem; margin-top: 1rem;">
+                📊 Datos actualizados en tiempo real desde Google Sheets y Huayca API<br>
+                🔗 Desarrollado con FastAPI • Documentación disponible en <a href="/docs">/docs</a>
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="/static/js/designaciones.js"></script>
+    
+    <!-- Error Fallback -->
+    <script>
+        // Fallback error handling
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error:', e.error);
+            const loading = document.getElementById('loading');
+            if (loading && loading.style.display !== 'none') {
+                loading.innerHTML = `
+                    <div class="error">
+                        <h3>Error al cargar la aplicación</h3>
+                        <p>Ha ocurrido un error al cargar los recursos necesarios.</p>
+                        <button onclick="location.reload()" class="clear-btn">Reintentar</button>
+                    </div>
+                `;
+            }
+        });
+        
+        // Check if JavaScript is properly loaded
+        setTimeout(function() {
+            if (typeof app === 'undefined') {
+                const loading = document.getElementById('loading');
+                if (loading && loading.style.display !== 'none') {
+                    loading.innerHTML = `
+                        <div class="error">
+                            <h3>Problema de conexión</h3>
+                            <p>No se pudieron cargar todos los recursos. Verifique su conexión a internet.</p>
+                            <button onclick="location.reload()" class="clear-btn">Reintentar</button>
+                        </div>
+                    `;
+                }
+            }
+        }, 5000);
+    </script>
+</body>
+</html>

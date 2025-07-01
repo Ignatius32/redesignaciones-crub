@@ -9,7 +9,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 import requests
-from crub_courses.api.factory import create_google_sheets_client, create_huayca_client
+from redesignaciones.api.factory import create_google_sheets_client, create_huayca_client
 from requests.auth import HTTPDigestAuth
 
 def debug_google_sheets():

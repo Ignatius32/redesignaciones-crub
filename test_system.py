@@ -14,8 +14,8 @@ from pathlib import Path
 src_dir = Path(__file__).parent / "src"
 sys.path.insert(0, str(src_dir))
 
-from crub_courses.api.factory import create_google_sheets_client, create_huayca_client
-from crub_courses.services.designaciones import DesignacionesService
+from redesignaciones.api.factory import create_google_sheets_client, create_huayca_client
+from redesignaciones.services.designaciones import DesignacionesService
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -217,7 +217,7 @@ def main():
     if service_success:
         print("✅ All tests passed! The system is ready to use.")
         print("\nTo start the FastAPI server, run:")
-        print("   python -m uvicorn src.crub_courses.main:app --reload")
+        print("   python -m uvicorn src.redesignaciones.main:app --reload")
         print("\nThen visit http://localhost:8000 for the web interface.")
     else:
         print("❌ Some tests failed. Please check the error messages above.")

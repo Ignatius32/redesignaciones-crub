@@ -147,7 +147,7 @@ curl http://127.0.0.1:8000/health
 ## Project Structure
 
 ```
-src/crub_courses/
+src/redesignaciones/
 ├── api/
 │   ├── clients.py      # Google Sheets & Huayca API clients
 │   └── factory.py      # Client factory functions
@@ -161,16 +161,16 @@ src/crub_courses/
 ## Files Created/Modified
 
 ### New Files Created:
-- `src/crub_courses/models/types.py` - Data models
-- `src/crub_courses/services/designaciones.py` - Business logic
-- `src/crub_courses/main.py` - FastAPI application
+- `src/redesignaciones/models/types.py` - Data models
+- `src/redesignaciones/services/designaciones.py` - Business logic
+- `src/redesignaciones/main.py` - FastAPI application
 - `run_server.py` - Server startup script
 - `test_system.py` - System test script
 - `README.md` - Documentation
 
 ### Existing Files Used:
-- `src/crub_courses/api/clients.py` - API clients (working perfectly)
-- `src/crub_courses/api/factory.py` - Client factory (working perfectly)
+- `src/redesignaciones/api/clients.py` - API clients (working perfectly)
+- `src/redesignaciones/api/factory.py` - Client factory (working perfectly)
 - `.env` - Configuration (all credentials working)
 
 ## Next Steps
