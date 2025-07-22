@@ -1,0 +1,29 @@
+[Unit]
+Description=CRUB Course Team Management System (redesignaciones)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/redesignaciones-crub
+Environment=PATH=/var/www/redesignaciones-crub/venv/bin
+Environment=PYTHONPATH=/var/www/redesignaciones-crub/src
+ExecStart=/var/www/redesignaciones-crub/venv/bin/python /var/www/redesignaciones-crub/production_server.py
+Restart=always
+RestartSec=10
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=redesignaciones-crub
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/www/redesignaciones-crub
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target
