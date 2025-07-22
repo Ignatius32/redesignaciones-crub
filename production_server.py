@@ -50,9 +50,11 @@ def main():
         # Get configuration from environment
         host = os.getenv("HOST", "127.0.0.1")
         port = int(os.getenv("PORT", "8001"))
+        root_path = os.getenv("ROOT_PATH", "/redesignaciones-crub")
         
         print(f"Starting production server on http://{host}:{port}")
         print(f"Application module: redesignaciones.main:app")
+        print(f"Root path: {root_path}")
         print("=" * 60)
         
         # Run with production settings
@@ -63,7 +65,8 @@ def main():
             reload=False,  # No reload in production
             log_level="info",
             access_log=True,
-            workers=1  # Single worker for now, can be increased
+            workers=1,  # Single worker for now, can be increased
+            root_path=root_path  # This tells FastAPI about the subpath
         )
         
     except ImportError as e:
