@@ -26,7 +26,10 @@ chown www-data:www-data $APP_DIR
 
 echo "2. Copying application files..."
 # Copy all files except local development files
-rsync -av --exclude='.git' --exclude='__pycache__' --exclude='.env' --exclude='venv' ./ $APP_DIR/
+# Since we're already in the target directory, just fix ownership and skip hidden files
+find . -name ".git" -prune -o -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
+find . -name "*.pyc" -delete 2>/dev/null || true
+# Set ownership
 chown -R www-data:www-data $APP_DIR
 
 echo "3. Setting up Python virtual environment..."
